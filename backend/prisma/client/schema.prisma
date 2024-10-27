@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  email              String         @unique
+  password           String?
+  token              String?
+  refreshToken       String?
+  refreshTokenExpiry DateTime?
+  twoFactorVerified  Boolean        @default(false)
+  twoFactorSecret    String?
+  isVerified         Boolean        @default(false)
+  providerId         String?
+  providerType       String?
+  role               String         @default("user")
+  devices            Device[]
+  whitelistIPs       WhitelistIP[]  @relation("UserWhitelistIPs")
+  loginSessions      LoginSession[]
+  loginAttempts      LoginAttempt[]
+  passkeys           Passkey[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model Device {
+  id            String         @id @default(uuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  ip            String
+  mac           String
+  location      String
+  isWhitelisted Boolean        @default(false) // For indicating whitelisted devices
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  loginAttempts LoginAttempt[]
+  loginSessions LoginSession[]
+}
+
+model WhitelistIP {
+  id        String   @id @default(uuid())
+  ip        String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], name: "UserWhitelistIPs")
+  createdAt DateTime @default(now())
+}
+
+model LoginSession {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  ip        String // IP for session tracking
+  deviceId  String? // Nullable as device may not always be available
+  device    Device?  @relation(fields: [deviceId], references: [id])
+  token     String? // Unique token for session identification
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model LoginAttempt {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id]) // Nullable if an anonymous attempt
+  ip        String
+  deviceId  String?
+  device    Device?  @relation(fields: [deviceId], references: [id])
+  isSuccess Boolean
+  createdAt DateTime @default(now())
+}
+
+model Passkey {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  passkeyId String   @unique
+  publicKey String // Stored public key part of passkey
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
