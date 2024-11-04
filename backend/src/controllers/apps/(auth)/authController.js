@@ -1,13 +1,13 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import asyncHandler from '../../../utils/asyncHandler.js';
-import apiError from '../../../utils/apiError.js';
-import apiResponse from '../../../utils/apiResponse.js';
-import { prisma } from '../../../config/database.js';
+import asyncHandler from '../../../../utils/asyncHandler.js';
+import apiError from '../../../../utils/apiError.js';
+import apiResponse from '../../../../utils/apiResponse.js';
+import { prisma } from '../../../../config/database.js';
 import { generateTokens, refreshAccessToken, setAuthCookies } from './tokenController.js';
-import { sendWelcomeEmail } from '../verification/helpers/emailEventHandler/welcomeEmailHelpers.js';
-import { handleEmailEvent } from '../verification/helpers/emailEventHandler/emailEventHandler.js';
-import { ACCOUNT_EXPIRY_DAYS, BCRYPT_SALT_ROUNDS } from '../../../constants.js';
+import { sendWelcomeEmail } from '../../../verification/helpers/emailEventHandler/welcomeEmailHelpers.js';
+import { handleEmailEvent } from '../../../verification/helpers/emailEventHandler/emailEventHandler.js';
+import { ACCOUNT_EXPIRY_DAYS, BCRYPT_SALT_ROUNDS } from '../../../../constants.js';
 
 
 
@@ -113,7 +113,7 @@ export const login = asyncHandler(async (req, res) => {
             data: { refreshToken }
         });
 
-        console.log("Token:", tokens);
+        // console.log("Token:", tokens);
 
         // Set cookies using the helper function
         setAuthCookies(res, accessToken, refreshToken);

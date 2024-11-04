@@ -19,12 +19,9 @@ const PORT = process.env.DEFAULT_PORT || 8080;
 const server = http.createServer(app);
 const io = new Server(server); 
 
-import authRouter from './src/(auth)/routes/authRouter.js';
+import authRouter from './src/routes/apps/(auth)/authRouter.js';
 
-
-
-
-
+import { errorHandler } from './src/middlewares/error.middlewares.js';
 
 // Ping Route
 app.get('/ping', (req, res) => {
@@ -32,7 +29,7 @@ app.get('/ping', (req, res) => {
 });
 
 // Middlewares
-app.use(express.json());
+app.use(express.json());   
 app.use(cookieParser());
 
 // Middleware to log all operations (requests and responses)
@@ -56,31 +53,24 @@ app.use((req, res, next) => {
     next();
 });
 
-// Global error handler
-app.use((err, req, res, next) => {
-    console.error(`Error: ${err.message}`);
-    res.status(500).send('Internal Server Error');
-});
+// Use the errorHandler middleware
+app.use(errorHandler);
 
 // Define routes
 const routes = [
-   
     { path: '/auth', router: authRouter },
-  
 ];
 
 // Use routes
 routes.forEach(({ path, router }) => {
-    if (path) {
+    if (path && typeof router === 'function') {
         app.use(path, router);
     } else {
-        console.warn(`Warning: Route for ${router.name} is not defined in environment variables.`);
+        console.warn(`Warning: Route for ${router ? router.name : 'undefined'} is not defined correctly.`);
     }
 });
 
-
-
 // Start the server
 server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}..☘️`);
+    console.log(`Server running at http://localhost:${PORT}   ..☘️`);
 });

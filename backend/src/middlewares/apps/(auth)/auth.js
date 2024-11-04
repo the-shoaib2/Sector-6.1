@@ -1,9 +1,8 @@
-//backend/Middlewares/Auth.js
-
-import ApiError from '../../../utils/apiError.js';
-import asyncHandler from '../../../utils/asyncHandler.js';
+import { prisma } from "../../../../config/database.js";
+import apiError from "../../../../utils/apiError.js";
+import asyncHandler from "../../../../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
-import { prisma } from '../../../config/database.js';
+
 
 
 /**
@@ -12,20 +11,20 @@ import { prisma } from '../../../config/database.js';
  * @param {Object} res - The response object
  * @param {Function} next - The next middleware function
  * @returns {Promise<void>}
- * @throws {ApiError} If the user is not authenticated
+ * @throws {apiError} If the user is not authenticated
  */
 export const ensureAuthenticated = asyncHandler(async (req, _, next) => {
     try {
         // Extract cookies from the request
         const cookies = req.headers.cookie;
         if (!cookies) {
-            throw new ApiError(401, "No cookies found");
+            throw new apiError(401, "No cookies found");
         }
 
         // Split cookies and find the access token
         const token = cookies.split('; ').find(cookie => cookie.startsWith('accessToken='));
         if (!token) {
-            throw new ApiError(401, "Unauthorized request");
+            throw new apiError(401, "Unauthorized request");
         }
 
         // Extract the token value
@@ -51,14 +50,15 @@ export const ensureAuthenticated = asyncHandler(async (req, _, next) => {
         });
 
         if (!user) {
-            throw new ApiError(401, "Invalid Access Token");
+            throw new apiError(401, "Invalid Access Token");
         }
 
         req.user = user;
         next();
     } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid access token");
+        throw new apiError(401, error?.message || "Invalid access token");
     }
 });
+
 
 export default ensureAuthenticated;

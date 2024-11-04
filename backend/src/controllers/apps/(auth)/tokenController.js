@@ -1,10 +1,10 @@
 //backend/Controllers/TokenController.js
 
 import jwt from 'jsonwebtoken';
-import { prisma } from '../../../config/database.js';
-import asyncHandler from '../../../utils/asyncHandler.js';
-import apiError from '../../../utils/apiError.js';
-import apiResponse from '../../../utils/apiResponse.js';
+import { prisma } from '../../../../config/database.js';
+import asyncHandler from '../../../../utils/asyncHandler.js';
+import apiError from '../../../../utils/apiError.js';
+import apiResponse from '../../../../utils/apiResponse.js';
 
 /**
  * @description Generates an access token for a user

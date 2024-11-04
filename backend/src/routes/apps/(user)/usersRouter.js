@@ -1,6 +1,6 @@
 // backend/Routes/UsersRouter.js
 // Loged in User 
-import ensureAuthenticated from '../Middlewares/Auth.js';
+import ensureAuthenticated from '../../../middlewares/apps/(auth)/auth.js';
 import UserModel from '../Models/UserModel.js';
 import { Router } from 'express'; 
 const router = Router();

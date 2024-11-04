@@ -1,5 +1,5 @@
-import { apiResponse } from "../../../../utils/apiResponse.js";
-import { asyncHandler } from "../../../../utils/asyncHandler.js";
+import { apiResponse } from "../../../utils/apiResponse.js";
+import { asyncHandler } from "../../../utils/asyncHandler.js";
 
 /**
  * @description Retrieves all cookies from the request and returns them in the response.
