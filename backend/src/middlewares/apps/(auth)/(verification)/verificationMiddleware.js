@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import { VERIFICATION_CODE_LENGTH } from '../../../Constants.js';
+import { VERIFICATION_CODE_LENGTH } from '../../../../../constants.js';
 
 // Validation schema for searching user
 export const searchUserValidation = (req, res, next) => {

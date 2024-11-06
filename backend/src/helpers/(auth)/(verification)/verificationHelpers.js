@@ -1,9 +1,17 @@
-import VerificationAttempt from '../Models/VerificationAttempt.js';
-import VerificationCode from '../Models/Verification.js'; 
-import ApiError from '../../../utils/ApiError.js';
-import { MAX_VERIFICATION_ATTEMPTS, VERIFICATION_COOLDOWN_PERIOD, ACCOUNT_LOCK_DURATION, VERIFICATION_CODE_LENGTH, VERIFICATION_CODE_EXPIRY } from '../../../../constants.js';
-import { connectToDatabase } from '../../../config/database.js';
-const prisma = connectToDatabase();
+import { prisma } from '../../../../config/database.js';
+import apiError from '../../../../utils/apiError.js';
+import { MAX_VERIFICATION_ATTEMPTS, 
+    VERIFICATION_COOLDOWN_PERIOD, 
+    ACCOUNT_LOCK_DURATION, 
+    VERIFICATION_CODE_LENGTH, 
+    VERIFICATION_CODE_EXPIRY 
+} from '../../../../constants.js';
+
+const VerificationAttempt = prisma.verificationAttempt;
+const VerificationCode = prisma.verificationCode;
+const User = prisma.user;
+
+
 
 
 
@@ -91,7 +99,7 @@ export const validateVerificationCode = async (userId, code) => {
     });
 
     if (!verificationCode) {
-        throw ApiError.badRequest('Invalid or expired verification code');
+        throw apiError.badRequest('Invalid or expired verification code');
     }
 
     verificationCode.verified = true;

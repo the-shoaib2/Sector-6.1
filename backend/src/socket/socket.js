@@ -1,8 +1,6 @@
 import socketIo from 'socket.io';
-import { prisma } from './database.js';
-import { authSocket } from '../Authentication/Middlewares/AuthSocket.js';
-
-const prisma = new PrismaClient();
+import { authSocket } from '../../socket/apps/(auth)/authSocket.js';
+import { initializeSocketIO as initializeChatSocket } from '../../socket/apps/(chat)/chatSocket.js';
 
 module.exports = (server) => {
 	const io = socketIo(server, {
@@ -13,14 +11,17 @@ module.exports = (server) => {
 		},
 	});
 
+	io.use(authSocket); // Use the authSocket middleware for authentication
+
+	// Initialize chat socket events
+	initializeChatSocket(io);
+
 	const connectedUsers = new Map();
 
 	const updateUserStatus = async (userId, status) => {
 		await User.findByIdAndUpdate(userId, { onlineStatus: status, lastActive: Date.now() });
 		io.emit('user_status', { userId, status: status ? 'online' : 'offline' }); // Notify all users
 	};
-
-	io.use(authSocket); // Use the authSocket middleware for authentication
 
 	io.on('connection', (socket) => {
 		console.log('New client connected');

@@ -5,8 +5,8 @@ import apiError from '../../../../utils/apiError.js';
 import apiResponse from '../../../../utils/apiResponse.js';
 import { prisma } from '../../../../config/database.js';
 import { generateTokens, refreshAccessToken, setAuthCookies } from './tokenController.js';
-import { sendWelcomeEmail } from '../../../verification/helpers/emailEventHandler/welcomeEmailHelpers.js';
-import { handleEmailEvent } from '../../../verification/helpers/emailEventHandler/emailEventHandler.js';
+import { sendWelcomeEmail } from '../../../helpers/(auth)/(verification)/emailEventHandler/welcomeEmailHelpers.js';
+import { handleEmailEvent } from '../../../helpers/(auth)/(verification)/emailEventHandler/emailEventHandler.js';
 import { ACCOUNT_EXPIRY_DAYS, BCRYPT_SALT_ROUNDS } from '../../../../constants.js';
 
 

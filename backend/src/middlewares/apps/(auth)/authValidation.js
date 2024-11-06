@@ -7,7 +7,7 @@ import {
     MIN_PASSWORD_LENGTH, 
     MAX_PASSWORD_LENGTH, 
     MIN_DOB_YEAR 
-} from "../../../constants.js";
+} from "../../../../constants.js";
 
 export const signupValidation = (req, res, next) => {
     const schema = Joi.object({

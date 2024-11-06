@@ -1,15 +1,16 @@
 // backend/Routes/UsersRouter.js
 // Loged in User 
+import { Prisma } from '@prisma/client';
 import ensureAuthenticated from '../../../middlewares/apps/(auth)/auth.js';
-import UserModel from '../Models/UserModel.js';
 import { Router } from 'express'; 
+const { user } = Prisma;
 const router = Router();
 
-const GET_ME_ROUTE = process.env.ROUTER_GET_ME;
+const GET_ME_ROUTE = "/me";
 
 router.get(GET_ME_ROUTE, ensureAuthenticated, async (req, res) => {
     try {
-        const user = await UserModel.findById(req.user._id, { password: 0 }); 
+        const user = await user.findUnique({ where: { id: req.user._id } }); 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

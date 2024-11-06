@@ -26,6 +26,8 @@ model User {
   loginSessions       LoginSession[]
   loginAttempts       LoginAttempt[]
   passkeys            Passkey[]
+  verificationAttempt VerificationAttempt[]
+  verification        Verification[]
   lastLogin           DateTime?
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
@@ -33,6 +35,29 @@ model User {
   messages            Message[] 
   accountExpiryDate   DateTime? 
 }
+
+model VerificationAttempt {
+  id                  String       @id @default(uuid())
+  userId              String
+  attempts            Int          @default(0)
+  lastAttempt         DateTime     @default(now())
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  cooldownEnd         DateTime? 
+  user                User         @relation(fields: [userId], references: [id])
+}
+
+model Verification {
+  id                  String       @id @default(uuid())
+  userId              String
+  code                String       @unique
+  expiresAt           DateTime     @default(now())
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  verified            Boolean      @default(false)
+  user                User         @relation(fields: [userId], references: [id])
+}
+
 
 model UserProfile {
   id                  String       @id @default(uuid())
@@ -198,8 +223,12 @@ model WhitelistIP {
   id                  String       @id @default(uuid())
   ip                  String
   userId              String
-  user                User         @relation(fields: [userId], references: [id], name: "UserWhitelistIPs")
+  deviceId            String?
+  sessionId           String?
+  expiresAt           DateTime
   createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  user                User         @relation(fields: [userId], references: [id], name: "UserWhitelistIPs")
 }
 
 model LoginSession {
@@ -208,6 +237,7 @@ model LoginSession {
   ip                  String
   deviceId            String?
   token               String?      
+  sessionId           String?
   expiresAt           DateTime
   createdAt           DateTime     @default(now())
   user                User         @relation(fields: [userId], references: [id])
@@ -219,6 +249,10 @@ model LoginAttempt {
   userId              String?
   ip                  String
   deviceId            String?      
+  attemptType         String
+  webAuthnId          String?
+  verificationId      String?
+  origin              String?
   isSuccess           Boolean      
   createdAt           DateTime     @default(now())
   user                User?        @relation(fields: [userId], references: [id])
@@ -229,6 +263,14 @@ model Passkey {
   id                  String       @id @default(uuid())
   userId              String
   passkeyId           String       @unique
+  name                String       
+  type                String
+  transports          String[]
+  authenticatorId     String
+  counter             Int
+  excludeCredentials  String[]
+  credentialPublicKey String
+  credentialIDHash    String
   publicKey           String
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt

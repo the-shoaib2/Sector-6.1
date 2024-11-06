@@ -1,6 +1,6 @@
 import { Router } from "express"; 
 import { signup, login, logout, deleteUser } from "../../../controllers/apps/(auth)/authController.js";
-// import { signupValidation, loginValidation } from "../../../middlewares/apps/(auth)/authValidation.js";
+import { signupValidation, loginValidation } from "../../../middlewares/apps/(auth)/authValidation.js";
 import { refreshAccessToken } from "../../../controllers/apps/(auth)/tokenController.js";
 import ensureAuthenticated from "../../../middlewares/apps/(auth)/auth.js";
 import rateLimit from 'express-rate-limit';
@@ -15,8 +15,8 @@ const limiter = rateLimit({
 });
 
 // Define routes
-router.post('/signup', limiter, signup);
-router.post('/login', limiter,  login);
+router.post('/signup', limiter, signupValidation, signup);
+router.post('/login', limiter, loginValidation, login);
 router.post('/logout', limiter, logout);
 router.delete('/delete-user', limiter, ensureAuthenticated, deleteUser);
 

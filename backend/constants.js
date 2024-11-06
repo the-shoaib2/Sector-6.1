@@ -55,3 +55,12 @@ export const TEMP_FILE_NAME_FORMAT = `temp_${Date.now()}.jpg`;
 
 
 
+// Chat constants
+export const CHAT_EVENTS_ENUM = {
+  JOIN_CHAT_EVENT: "chat:join",
+  TYPING_EVENT: "chat:typing",
+  STOP_TYPING_EVENT: "chat:stopTyping",
+};
+
+export const AVAILABLE_CHAT_EVENTS = Object.values(CHAT_EVENTS_ENUM);
+

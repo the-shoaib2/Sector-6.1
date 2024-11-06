@@ -1,5 +1,3 @@
-// backend/index.js
-
 // Importing required modules
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -7,6 +5,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import http from 'http';
 import { Server } from 'socket.io';
+// import { connectKafka, disconnectKafka } from './config/kafka.js'; // Import Kafka functions
+
+import { app, errorHandler } from './index.js';
 
 // Load environment variables
 dotenv.config();
@@ -14,21 +15,11 @@ dotenv.config();
 import './config/database.js';
 
 // Set up the server
-const app = express();
 const PORT = process.env.DEFAULT_PORT || 8080; 
 const server = http.createServer(app);
 const io = new Server(server); 
 
-import authRouter from './src/routes/apps/(auth)/authRouter.js';
-
-import { errorHandler } from './src/middlewares/error.middlewares.js';
-
-// Ping Route
-app.get('/ping', (req, res) => {
-    res.send('Server is Running... 🚀');
-});
-
-// Middlewares
+// Middleware setup
 app.use(express.json());   
 app.use(cookieParser());
 
@@ -37,37 +28,35 @@ app.use((req, res, next) => {
     console.clear(); 
     const start = Date.now();
     
-    // Log the request details
-    // console.log(`Request: ${req.method} ${req.url} - Body: ${JSON.stringify(req.body)}`);
-
-    // Capture the original send method
     const originalSend = res.send.bind(res);
     
-    // Override the send method to log the response
     res.send = function (body) {
         const duration = Date.now() - start;
-        // console.log(`Response: ${res.statusCode} - Duration: ${duration}ms - Body: ${body}`);
+        console.log(`Response: ${res.statusCode} - Duration: ${duration}ms - Body: ${JSON.stringify(body).substring(0, 100)}`);
         return originalSend(body);
     };
 
     next();
 });
 
+// Ping Route
+app.get('/ping', (req, res) => {
+    res.send('<html><body><h1> <div style="color: green; text-align: center; display: flex; justify-content: center; align-items: center; height: 100vh;"> 🚀...Server is Running... 🚀</div></h1></body></html>');
+});
+
 // Use the errorHandler middleware
 app.use(errorHandler);
 
-// Define routes
-const routes = [
-    { path: '/auth', router: authRouter },
-];
+// Connect to Kafka
+// connectKafka().catch(error => {
+//     console.error('Failed to connect to Kafka:', error);
+//     process.exit(1); // Exit the process if Kafka connection fails
+// });
 
-// Use routes
-routes.forEach(({ path, router }) => {
-    if (path && typeof router === 'function') {
-        app.use(path, router);
-    } else {
-        console.warn(`Warning: Route for ${router ? router.name : 'undefined'} is not defined correctly.`);
-    }
+// Disconnect Kafka on server close
+process.on('SIGINT', async () => {
+    // await disconnectKafka();
+    process.exit(0);
 });
 
 // Start the server
